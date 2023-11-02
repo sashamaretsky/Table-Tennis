@@ -62,7 +62,7 @@ background = transform.scale(image.load('table.png'), (700, 500))
 platform_l = Player('platform.png', 3, 200, 20, 100, 3)
 platform_r = Player('platform.png', 677, 200, 20, 100, 3) 
 ball = Ball('ball.png', 308, 208, 75, 75, 0, 2, 2)
-font1 = font.Font(None, 60)
+font1 = font.SysFont('Times New Roman', 60)
 text1 = font1.render('Player 1 has won!', 1, (50, 250, 50))
 text2 = font1.render('Player 2 has won!', 1, (250, 50, 50))
 while game:
@@ -79,10 +79,10 @@ while game:
         ball.show_sprite()
         ball.update()
         if ball.rect.x >= 700:
-            window.blit(text1, (325, 75))
+            window.blit(text1, (250, 150))
             finish = True
         if ball.rect.x < -75:
-            window.blit(text2, (325, 75))
+            window.blit(text2, (250, 150))
             finish = True
 
     display.update()
