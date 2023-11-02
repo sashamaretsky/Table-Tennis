@@ -1,8 +1,11 @@
 from pygame import *
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import Qt
 import random
 font.init()
 
-
+amount_1 = 0
+amount_2 = 0
 
 
 class GameSprite(sprite.Sprite):
@@ -59,17 +62,30 @@ bullets_amount = 0
 clock = time.Clock()
 background = transform.scale(image.load('table.png'), (700, 500))
 
-platform_l = Player('platform.png', 3, 200, 20, 100, 3)
-platform_r = Player('platform.png', 677, 200, 20, 100, 3) 
-ball = Ball('ball.png', 308, 208, 75, 75, 0, 2, 2)
-font1 = font.SysFont('Times New Roman', 60)
+platform_l = Player('platform.png', 3, 200, 20, 100, 3.5)
+platform_r = Player('platform.png', 677, 200, 20, 100, 3.5) 
+ball = Ball('ball.png', 308, 208, 75, 75, 0, 4, 4)
+return_button = GameSprite('Return_button.png', 270, 255, 80, 50, 0)
+rating_button = GameSprite('Leaders_button.png', 350, 255, 80, 50, 0)
+font1 = font.Font(None, 60)
 text1 = font1.render('Player 1 has won!', 1, (50, 250, 50))
 text2 = font1.render('Player 2 has won!', 1, (250, 50, 50))
+
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
+        if e.type == MOUSEBUTTONDOWN and e.button == 1:
+            x,y = e.pos
+            if return_button.rect.collidepoint(x, y):
+                finish == False
+                ball.rect.x = 308
+                ball.rect.y = 208
+                amount_1=0
+                amount_2=0
+                
     
+    text_score = font1.render(str(amount_1) + ' : ' + str(amount_2), 1, (50,50,250))
     if finish == False:
         window.blit(background, (0, 0))
         platform_l.update_l()
@@ -78,12 +94,29 @@ while game:
         platform_r.show_sprite()
         ball.show_sprite()
         ball.update()
-        if ball.rect.x >= 700:
-            window.blit(text1, (250, 150))
+        window.blit(text_score, (305, 10))
+
+        if amount_1 == 1:
+            window.blit(text1, (190, 200))
+            return_button.show_sprite()
+            #rating_button.show_sprite()
             finish = True
-        if ball.rect.x < -75:
-            window.blit(text2, (250, 150))
+        if amount_2 == 1:
+            window.blit(text2, (190, 200))
+            return_button.show_sprite()
+            #rating_button.show_sprite()
             finish = True
 
+        if ball.rect.x >= 650:
+            amount_1 += 1
+            ball.rect.x = 308
+            ball.rect.y = 208
+            
+        if ball.rect.x < -25:
+            amount_2+=1
+            ball.rect.x = 308
+            ball.rect.y = 208
+            
+        
     display.update()
     clock.tick(FPS)
