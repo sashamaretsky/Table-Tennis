@@ -1,7 +1,8 @@
 from pygame import *
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import Qt
+from PyQt5.QtWidgets import QInputDialog, QApplication, QWidget
 import random
+import json
 font.init()
 
 amount_1 = 0
@@ -55,6 +56,9 @@ class Player(GameSprite):
 window = display.set_mode((700, 500))
 display.set_caption('Table Tennis')
 
+app = QApplication([])
+win = QWidget()
+
 FPS = 60
 game = True
 finish = False
@@ -67,9 +71,17 @@ platform_r = Player('platform.png', 677, 200, 20, 100, 3.5)
 ball = Ball('ball.png', 308, 208, 75, 75, 0, 4, 4)
 return_button = GameSprite('Return_button.png', 270, 255, 80, 50, 0)
 rating_button = GameSprite('Leaders_button.png', 350, 255, 80, 50, 0)
+
 font1 = font.Font(None, 60)
 text1 = font1.render('Player 1 has won!', 1, (50, 250, 50))
 text2 = font1.render('Player 2 has won!', 1, (250, 50, 50))
+max_amount = 0
+min_amount = 0
+try:
+    with open('f.json', 'r') as file:
+        data = json.load(file)
+except:
+    data = {}
 
 while game:
     for e in event.get():
@@ -78,12 +90,24 @@ while game:
         if e.type == MOUSEBUTTONDOWN and e.button == 1:
             x,y = e.pos
             if return_button.rect.collidepoint(x, y):
-                finish == False
+                finish = False
                 ball.rect.x = 308
                 ball.rect.y = 208
                 amount_1=0
                 amount_2=0
+            if rating_button.rect.collidepoint(x, y):
+                name1, ok1 = QInputDialog.getText(win, 'Введите имя победителя', 'Введите имя победителя')
+                name2, ok2 = QInputDialog.getText(win, 'Введите имя проигравшего', 'Введите имя проигравшего')
                 
+                with open('f.json', 'w') as file:
+                    data[len(data)+1] = { 
+                            name1 : max_amount,
+                            name2 : min_amount
+                        }
+                    json.dump(data, file)
+                
+                for a in data:
+                    print(data[a])
     
     text_score = font1.render(str(amount_1) + ' : ' + str(amount_2), 1, (50,50,250))
     if finish == False:
@@ -96,16 +120,22 @@ while game:
         ball.update()
         window.blit(text_score, (305, 10))
 
-        if amount_1 == 1:
+        if amount_1 == 11:
             window.blit(text1, (190, 200))
             return_button.show_sprite()
-            #rating_button.show_sprite()
+            rating_button.show_sprite()
             finish = True
-        if amount_2 == 1:
+        if amount_2 == 11:
             window.blit(text2, (190, 200))
             return_button.show_sprite()
-            #rating_button.show_sprite()
+            rating_button.show_sprite()
             finish = True
+            if amount_1 > amount_2:
+                max_amount = amount_1
+                min_amount = amount_2
+            else:
+                max_amount = amount_2
+                min_amount = amount_1
 
         if ball.rect.x >= 650:
             amount_1 += 1
